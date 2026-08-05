@@ -84,7 +84,7 @@ export const UiDesign = () => {
 
     // Tell ScrollTrigger to recalculate page height
     setTimeout(() => ScrollTrigger.refresh(), 100);
-  }, [data, currentIndex, loadingMore]);
+  }, [filteredData, currentIndex, loadingMore]);
 
   useEffect(() => {
     if (visibleItems.length === 0 || !sectionRef.current) return;
@@ -99,7 +99,7 @@ export const UiDesign = () => {
 
       gsap.set(".ui-card", {
         opacity: 0,
-        x: (i) => (i % 3 === 0 ? 0 : i % 3 === 2 ? 0 : 0), // Directional entrance
+        x: 0,
         y: (i) => (i < 3 ? -30 : 30), // Vertical offset
       });
 
@@ -107,7 +107,7 @@ export const UiDesign = () => {
       gsap.set(hLines, { scaleX: 0, transformOrigin: "left" });
       gsap.set(vLines, { scaleY: 0, transformOrigin: "top" });
 
-      // 2. Main Timeline (Using Scrub: 1 as per your request)
+      // 2. Main Timeline
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
@@ -149,7 +149,6 @@ export const UiDesign = () => {
         vLines,
         {
           scaleY: 1,
-
           stagger: 0.2,
           duration: 0.5,
         },
@@ -184,24 +183,24 @@ export const UiDesign = () => {
   }, [filteredData, visibleItems.length, loadMoreItems]);
 
   return (
-    <section ref={sectionRef} className="bg-white text-gray-900 py-20 px-4 ">
-      <div className="sticky top-0 z-50 bg-white py-8">
-        <h2 ref={titleRef} className="text-center text-4xl font-serif mb-10 ">
+    <section ref={sectionRef} className="bg-white text-gray-900 py-20 px-4">
+      {/* Sticky Header with Horizontal Scroll for categories */}
+      <div className="sticky top-0 z-50 bg-white py-6">
+        <h2 ref={titleRef} className="text-center text-4xl font-serif mb-8">
           Selected UI Designs
         </h2>
 
-        <div className="overflow-x-auto md:overflow-visible scrollbar-hide">
-          <div className="flex md:flex-wrap md:justify-center gap-3 min-w-max md:min-w-0 px-4 pb-2">
+        <div className="overflow-x-auto scrollbar-hide px-4 pb-2">
+          <div className="flex flex-nowrap justify-start min-w-max xl:flex-wrap xl:justify-center xl:min-w-0 gap-3">
             {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-5 py-2 rounded-full whitespace-nowrap text-lg transition-all duration-300
-      ${
-        selectedCategory === category
-          ? "bg-black text-white"
-          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-      }`}
+                className={`px-5 py-2 rounded-full whitespace-nowrap text-lg transition-all duration-300 ${
+                  selectedCategory === category
+                    ? "bg-black text-white"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                }`}
               >
                 {categoryLabels[category] || category}
               </button>
@@ -210,9 +209,8 @@ export const UiDesign = () => {
         </div>
       </div>
 
-      <div className="relative max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0">
+      <div className="relative max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 mt-8">
         {visibleItems.map((item, index) => (
-          // Use a unique key combining ID and index to fix the duplicate key warning
           <div
             key={`${item._id}-${index}`}
             className="ui-card relative group p-10"
